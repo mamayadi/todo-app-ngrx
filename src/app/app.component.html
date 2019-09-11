@@ -1,0 +1,62 @@
+<mat-toolbar color="primary">
+  <span class="toolbar">TODO App</span>
+</mat-toolbar>
+<section class="tasks">
+
+  <form class="example-form" [formGroup]="myForm" (ngSubmit)="addTask()">
+    <mat-form-field class="example-full-width">
+      <input type="text" formControlName="taskInput" matInput placeholder="Add ToDo" value="">
+    </mat-form-field>
+    <button mat-icon-button [disabled]="!myForm.valid" aria-label="Example icon-button with a heart icon"
+      (click)="addTask()">
+      <mat-icon color="primary" aria-hidden="false" aria-label="Example home icon">add</mat-icon>
+    </button>
+  </form>
+  <p style="text-align: center;" *ngIf="tasks?.length===0"> You don't have any tasks </p>
+  <!-- all Task -->
+  <mat-list *ngIf="tasks?.length && display === 'all'">
+    <mat-list-item *ngFor="let task of tasks">
+      <mat-icon mat-list-icon color="warn" aria-hidden="false" (click)="openDialog(task.id)">delete</mat-icon>
+      <input type="text" matInput placeholder="Add ToDo" (blur)="updateTaskName(task, $event)" [value]="task.taskName">
+      <mat-checkbox matSuffix class="example-margin" [value]="task.status" (click)="markTaskDone(task)"></mat-checkbox>
+    </mat-list-item>
+  </mat-list>
+
+  <!-- to do tasks  -->
+  <mat-list *ngIf="tasks?.length && display === 'todo'">
+    <ng-container *ngFor="let task of tasks">
+      <mat-list-item *ngIf="task.status === false">
+        <mat-icon mat-list-icon color="warn" aria-hidden="false" (click)="openDialog(task.id)">delete</mat-icon>
+        <input type="text" matInput placeholder="Add ToDo" (blur)="updateTaskName(task, $event)"
+          [value]="task.taskName">
+        <!-- {{task.taskName}} -->
+        <mat-checkbox matSuffix class="example-margin" [value]="task.status" (click)="markTaskDone(task)">
+        </mat-checkbox>
+      </mat-list-item>
+    </ng-container>
+  </mat-list>
+
+  <!-- task done -->
+  <mat-list *ngIf="tasks?.length && display === 'done'">
+    <ng-container *ngFor="let task of tasks">
+      <mat-list-item *ngIf="task.status === true">
+        <mat-icon mat-list-icon color="warn" aria-hidden="false" (click)="openDialog(task.id)">delete</mat-icon>
+        <input type="text" matInput placeholder="Add ToDo" (blur)="updateTaskName(task, $event)"
+          [value]="task.taskName">
+        <!-- {{task.taskName}} -->
+        <mat-checkbox matSuffix class="example-margin" [value]="task.status" (click)="markTaskDone(task)">
+        </mat-checkbox>
+      </mat-list-item>
+    </ng-container>
+  </mat-list>
+
+  <span>
+    Tasks To Do: {{lengthTasksTodo}}
+  </span>
+  <button mat-button (click)="displayTasks('all')">All</button>
+  <button mat-button (click)="displayTasks('todo')">To do</button>
+  <button mat-button (click)="displayTasks('done')">Done</button>
+</section>
+
+
+<router-outlet></router-outlet>
