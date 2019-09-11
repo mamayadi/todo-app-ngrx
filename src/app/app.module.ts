@@ -16,6 +16,8 @@ import { MatToolbarModule, MatIconModule, MatListModule, MatFormFieldModule, Mat
 
 // NgRx
 import {StoreModule} from '@ngrx/store';
+import { reducer } from './state/app.reducer';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 @NgModule({
   declarations: [
@@ -39,7 +41,11 @@ import {StoreModule} from '@ngrx/store';
     MatButtonModule,
     MatDialogModule,
     MatCheckboxModule,
-    StoreModule.forRoot({}),
+    StoreModule.forRoot({appState: reducer}),
+    StoreDevtoolsModule.instrument({
+      name: 'Todo app ngrx',
+      maxAge: 25
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]

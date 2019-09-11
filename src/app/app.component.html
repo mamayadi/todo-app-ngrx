@@ -1,7 +1,7 @@
 <mat-toolbar color="primary">
   <span class="toolbar">TODO App</span>
 </mat-toolbar>
-<section class="tasks">
+<section class="tasks" *ngIf="tasks !== undefined">
 
   <form class="example-form" [formGroup]="myForm" (ngSubmit)="addTask()">
     <mat-form-field class="example-full-width">
@@ -50,7 +50,7 @@
     </ng-container>
   </mat-list>
 
-  <span>
+  <span class="taskLengthspan">
     Tasks To Do: {{lengthTasksTodo}}
   </span>
   <div *ngIf="tasks?.length">

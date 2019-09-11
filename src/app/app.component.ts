@@ -1,3 +1,5 @@
+import { TaskActionTypes } from './state/app.actions';
+import * as TaskActions from './state/app.actions';
 import { TaskService } from './task.service';
 import { Component, OnInit, HostListener, Inject } from '@angular/core';
 import { Task } from './models/task';
@@ -16,18 +18,19 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA
 } from '@angular/material/dialog';
+import { Store, select } from '@ngrx/store';
 
 @Component({
   selector: 'app-dialog-overview-example-dialog',
   template: `
-  <h1 mat-dialog-title>Delete Task</h1>
-<div mat-dialog-content>
-  <p>Are you sure you want to delete this task?</p>
-</div>
-<div mat-dialog-actions>
-  <button mat-button (click)="onNoClick()">No Thanks</button>
-  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Ok</button>
-</div>
+    <h1 mat-dialog-title>Delete Task</h1>
+    <div mat-dialog-content>
+      <p>Are you sure you want to delete this task?</p>
+    </div>
+    <div mat-dialog-actions>
+      <button mat-button (click)="onNoClick()">No Thanks</button>
+      <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Ok</button>
+    </div>
   `
 })
 export class DialogOverviewExampleDialogComponent {
@@ -48,14 +51,16 @@ export class DialogOverviewExampleDialogComponent {
 })
 export class AppComponent implements OnInit {
   title = 'todo-app';
-  tasks: Task[] = [];
+  tasks: Task[];
   myForm: FormGroup;
   display = 'all';
 
-  animal: string;
-  name: string;
 
-  constructor(private taskService: TaskService, public dialog: MatDialog) {}
+  constructor(
+    private store: Store<any>,
+    private taskService: TaskService,
+    public dialog: MatDialog
+  ) {}
 
   ngOnInit() {
     this.myForm = new FormGroup({
@@ -65,13 +70,22 @@ export class AppComponent implements OnInit {
       ])
     });
 
+    this.getTasks();
+
+    this.store.pipe(select('appState')).subscribe(data => {
+      // this.tasks = data.tasks;
+      this.display = data.display;
+    });
+  }
+
+  getTasks() {
     this.taskService.getTasks().subscribe(
       (tasks: Task[]) => {
         this.tasks = tasks;
-        console.log(this.tasks);
       },
       err => console.log(err)
     );
+    this.store.dispatch(new TaskActions.GetTasks(this.tasks));
   }
 
   @HostListener('document:keydown.Enter', ['$event']) onKeyDown(
@@ -93,9 +107,8 @@ export class AppComponent implements OnInit {
       };
       this.myForm.reset();
       this.taskService.createTask(newTask).subscribe(task => {
-        console.log('New Task Added:');
-        console.log(task);
-        console.log('Tasks:', this.tasks);
+        // console.log(task);
+        this.store.dispatch(new TaskActions.AddTask(task));
       });
     }
   }
@@ -106,6 +119,7 @@ export class AppComponent implements OnInit {
     this.taskService
       .updateTask(task)
       .subscribe((data: Task) => console.log(data));
+    this.store.dispatch(new TaskActions.UpdateTaskStatus(task));
   }
 
   updateTaskName(task: Task, e: any) {
@@ -113,10 +127,18 @@ export class AppComponent implements OnInit {
     this.taskService
       .updateTask(task)
       .subscribe((data: Task) => console.log(data));
+    this.store.dispatch(new TaskActions.UpdateTaskName(task));
+  }
+
+  deleteTask(id: number) {
+    this.taskService.deleteTask(id).subscribe(data => {
+      console.log(data);
+      this.store.dispatch(new TaskActions.RemoveTask(data));
+    });
   }
 
   displayTasks(p: string) {
-    this.display = p;
+    this.store.dispatch(new TaskActions.ChangeDisplay(p));
   }
 
   get lengthTasksTodo() {
@@ -131,16 +153,10 @@ export class AppComponent implements OnInit {
     console.log(option);
   }
 
-  deleteTask(id: number) {
-    this.taskService.deleteTask(id).subscribe(data => {
-      console.log(data);
-    });
-  }
-
   openDialog(id: number) {
     const dialogRef = this.dialog.open(DialogOverviewExampleDialogComponent, {
       width: '250px',
-      data:  id
+      data: id
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -149,5 +165,3 @@ export class AppComponent implements OnInit {
     });
   }
 }
-
-
