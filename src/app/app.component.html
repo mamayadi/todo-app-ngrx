@@ -18,7 +18,7 @@
     <mat-list-item *ngFor="let task of tasks">
       <mat-icon mat-list-icon color="warn" aria-hidden="false" (click)="openDialog(task.id)">delete</mat-icon>
       <input type="text" matInput placeholder="Add ToDo" (blur)="updateTaskName(task, $event)" [value]="task.taskName">
-      <mat-checkbox matSuffix class="example-margin" [value]="task.status" (click)="markTaskDone(task)"></mat-checkbox>
+      <mat-checkbox matSuffix class="example-margin" [checked]="task.status" (change)="markTaskDone(task)"></mat-checkbox>
     </mat-list-item>
   </mat-list>
 
@@ -30,7 +30,7 @@
         <input type="text" matInput placeholder="Add ToDo" (blur)="updateTaskName(task, $event)"
           [value]="task.taskName">
         <!-- {{task.taskName}} -->
-        <mat-checkbox matSuffix class="example-margin" [value]="task.status" (click)="markTaskDone(task)">
+        <mat-checkbox matSuffix class="example-margin" [checked]="task.status" (change)="markTaskDone(task)">
         </mat-checkbox>
       </mat-list-item>
     </ng-container>
@@ -44,7 +44,7 @@
         <input type="text" matInput placeholder="Add ToDo" (blur)="updateTaskName(task, $event)"
           [value]="task.taskName">
         <!-- {{task.taskName}} -->
-        <mat-checkbox matSuffix class="example-margin" [value]="task.status" (click)="markTaskDone(task)">
+        <mat-checkbox matSuffix class="example-margin" [checked]="task.status" (change)="markTaskDone(task)">
         </mat-checkbox>
       </mat-list-item>
     </ng-container>
@@ -53,9 +53,11 @@
   <span>
     Tasks To Do: {{lengthTasksTodo}}
   </span>
-  <button mat-button (click)="displayTasks('all')">All</button>
-  <button mat-button (click)="displayTasks('todo')">To do</button>
-  <button mat-button (click)="displayTasks('done')">Done</button>
+  <div *ngIf="tasks?.length">
+    <button mat-button (click)="displayTasks('all')">All</button>
+    <button mat-button (click)="displayTasks('todo')">To do</button>
+    <button mat-button (click)="displayTasks('done')">Done</button>
+  </div>
 </section>
 
 

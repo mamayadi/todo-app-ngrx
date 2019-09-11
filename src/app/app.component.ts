@@ -101,6 +101,7 @@ export class AppComponent implements OnInit {
   }
 
   markTaskDone(task: Task) {
+    // console.log(!task.status);
     task.status = !task.status;
     this.taskService
       .updateTask(task)

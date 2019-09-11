@@ -14,6 +14,9 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatToolbarModule, MatIconModule, MatListModule, MatFormFieldModule, MatInputModule,
   MatButtonModule, MatDialogModule, MatCheckboxModule } from '@angular/material';
 
+// NgRx
+import {StoreModule} from '@ngrx/store';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -35,7 +38,8 @@ import { MatToolbarModule, MatIconModule, MatListModule, MatFormFieldModule, Mat
     MatInputModule,
     MatButtonModule,
     MatDialogModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    StoreModule.forRoot({}),
   ],
   providers: [],
   bootstrap: [AppComponent]
