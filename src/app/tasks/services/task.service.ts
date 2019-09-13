@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Task } from './models/task';
+import { Task } from '../../models/task';
 import { Observable, throwError } from 'rxjs';
 
 import {tap, catchError, map} from 'rxjs/operators';

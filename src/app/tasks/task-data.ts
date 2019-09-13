@@ -1,6 +1,6 @@
 import { InMemoryDbService } from 'angular-in-memory-web-api';
 
-import { Task } from './models/task';
+import { Task } from '../models/task';
 
 export class TaskData implements InMemoryDbService {
   createDb() {

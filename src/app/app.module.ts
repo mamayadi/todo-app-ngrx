@@ -3,45 +3,32 @@ import { NgModule } from '@angular/core';
 
 // Imports for loading & configuring the in-memory web api
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
-import { TaskData } from './task-data';
+import { TaskData } from './tasks/task-data';
 
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent, DialogOverviewExampleDialogComponent } from './app.component';
+import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-
-import { MatToolbarModule, MatIconModule, MatListModule, MatFormFieldModule, MatInputModule,
-  MatButtonModule, MatDialogModule, MatCheckboxModule } from '@angular/material';
 
 // NgRx
-import {StoreModule} from '@ngrx/store';
-import { reducer } from './state/app.reducer';
+import { StoreModule, MetaReducer } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { EffectsModule } from '@ngrx/effects';
+import { TasksModule } from './tasks/tasks.module';
+import { MatToolbarModule } from '@angular/material';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    DialogOverviewExampleDialogComponent
-  ],
-  entryComponents: [DialogOverviewExampleDialogComponent],
+  declarations: [AppComponent],
+
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientInMemoryWebApiModule.forRoot(TaskData),
     HttpClientModule,
-    FormsModule,
-    ReactiveFormsModule,
     MatToolbarModule,
-    MatIconModule,
-    MatListModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatCheckboxModule,
-    StoreModule.forRoot({appState: reducer}),
+    TasksModule,
+    StoreModule.forRoot({}),
     StoreDevtoolsModule.instrument({
       name: 'Todo app ngrx',
       maxAge: 25
@@ -50,4 +37,4 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
