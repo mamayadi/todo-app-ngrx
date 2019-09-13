@@ -17,7 +17,7 @@ export class TaskService {
     return this.http.get<Task[]>(this.tasksUrl)
       .pipe(
         tap(data => console.log(JSON.stringify(data))),
-        tap(data => this.tasks = data),
+        // tap(data => this.tasks = data),
         catchError(this.handleError)
       );
   }

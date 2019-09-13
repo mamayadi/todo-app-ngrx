@@ -1,5 +1,5 @@
+import { Task } from './../models/task';
 import { Component, OnInit, HostListener, Inject } from '@angular/core';
-import { Task } from '../models/task';
 import {
   FormControl,
   FormGroupDirective,
@@ -8,6 +8,7 @@ import {
   Validators
 } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { MatListOption } from '@angular/material';
 
 import {
@@ -51,11 +52,17 @@ export class DialogOverviewExampleDialogComponent {
   styleUrls: ['./tasks.component.scss']
 })
 export class TasksComponent implements OnInit {
+  errorMessage$: Observable<string>;
   tasks: Task[];
   myForm: FormGroup;
   display: string;
+  tasks$: Observable<Task[]>;
 
-  constructor(private store: Store<fromTask.State>, private taskService: TaskService, public dialog: MatDialog) {}
+  constructor(
+    private store: Store<fromTask.State>,
+    private taskService: TaskService,
+    public dialog: MatDialog
+  ) {}
 
   ngOnInit() {
     this.myForm = new FormGroup({
@@ -64,23 +71,26 @@ export class TasksComponent implements OnInit {
         Validators.minLength(1)
       ])
     });
-    this.getTasks();
-    this.store.pipe(select(fromTask.getTasks)).subscribe(
-      tasks => this.tasks = tasks
-    );
-    this.store.pipe(select(fromTask.getDisplay)).subscribe(
-      data => this.display = data
-    );
+    this.tasks$ = this.store.pipe(select(fromTask.getTasks));
+    this.errorMessage$ = this.store.pipe(select(fromTask.getError));
+    this.store.dispatch(new taskActions.Load());
+    this.store
+      .pipe(select(fromTask.getDisplay))
+      .subscribe(data => (this.display = data));
+    // this.getTasks();
+    // this.store.pipe(select(fromTask.getTasks)).subscribe(
+    //   tasks => this.tasks = tasks
+    // );
   }
 
-  getTasks() {
-    this.taskService.getTasks().subscribe(
-      (tasks: Task[]) => {
-        this.tasks = tasks;
-      },
-      err => console.log(err)
-    );
-  }
+  // getTasks() {
+  //   this.taskService.getTasks().subscribe(
+  //     (tasks: Task[]) => {
+  //       this.tasks = tasks;
+  //     },
+  //     err => console.log(err)
+  //   );
+  // }
 
   @HostListener('document:keydown.Enter', ['$event']) onKeyDown(
     event: KeyboardEvent
@@ -136,9 +146,11 @@ export class TasksComponent implements OnInit {
   }
 
   get lengthTasksTodo() {
-    let i = 0;
-    this.tasks.forEach((task: Task) =>
-      task.status === false ? i++ : (i = i + 0)
+    let i: number;
+    this.tasks$.pipe(
+      map(tasks =>
+        tasks.forEach(task => (task.status === false ? i++ : (i = i + 0)))
+      )
     );
     return i;
   }
