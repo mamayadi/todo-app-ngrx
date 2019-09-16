@@ -1,3 +1,4 @@
+import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -18,6 +19,7 @@ import {
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { reducer } from './state/reducers/tasks.reducer';
+import { TaskEffects } from './state/effects/tasks.effects';
 
 
 // Router
@@ -41,7 +43,8 @@ const taskRoutes: Routes = [
     MatCheckboxModule,
     MatDialogModule,
     RouterModule.forChild(taskRoutes),
-    StoreModule.forFeature('tasks', reducer)
+    StoreModule.forFeature('tasks', reducer),
+    EffectsModule.forFeature([TaskEffects])
   ],
   exports: [TasksComponent, DialogOverviewExampleDialogComponent]
 })

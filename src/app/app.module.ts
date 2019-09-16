@@ -32,7 +32,8 @@ import { MatToolbarModule } from '@angular/material';
     StoreDevtoolsModule.instrument({
       name: 'Todo app ngrx',
       maxAge: 25
-    })
+    }),
+    EffectsModule.forRoot([])
   ],
   providers: [],
   bootstrap: [AppComponent]

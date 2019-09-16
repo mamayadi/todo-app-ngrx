@@ -71,26 +71,18 @@ export class TasksComponent implements OnInit {
         Validators.minLength(1)
       ])
     });
-    this.tasks$ = this.store.pipe(select(fromTask.getTasks));
+    console.log(this.tasks$);
+    this.tasks$ = this.store.pipe(select(fromTask.getTasks)) as Observable<
+      Task[]
+    >;
+
     this.errorMessage$ = this.store.pipe(select(fromTask.getError));
     this.store.dispatch(new taskActions.Load());
+    console.log(this.tasks$);
     this.store
       .pipe(select(fromTask.getDisplay))
       .subscribe(data => (this.display = data));
-    // this.getTasks();
-    // this.store.pipe(select(fromTask.getTasks)).subscribe(
-    //   tasks => this.tasks = tasks
-    // );
   }
-
-  // getTasks() {
-  //   this.taskService.getTasks().subscribe(
-  //     (tasks: Task[]) => {
-  //       this.tasks = tasks;
-  //     },
-  //     err => console.log(err)
-  //   );
-  // }
 
   @HostListener('document:keydown.Enter', ['$event']) onKeyDown(
     event: KeyboardEvent
@@ -111,49 +103,49 @@ export class TasksComponent implements OnInit {
       };
       this.store.dispatch(new taskActions.AddTask(newTask));
       this.myForm.reset();
-      this.taskService.createTask(newTask).subscribe(task => {
-        console.log(task);
-      });
     }
   }
 
   markTaskDone(task: Task) {
     // console.log(!task.status);
     task.status = !task.status;
-    this.store.dispatch(new taskActions.ChangeTaskStatus(task));
-    this.taskService
-      .updateTask(task)
-      .subscribe((data: Task) => console.log(data));
+    this.store.dispatch(new taskActions.UpdateTask(task));
   }
 
   updateTaskName(task: Task, e: any) {
     task.taskName = e.target.value;
-    this.store.dispatch(new taskActions.ChangeTaskName(task));
-    this.taskService
-      .updateTask(task)
-      .subscribe((data: Task) => console.log(data));
+    this.store.dispatch(new taskActions.UpdateTask(task));
   }
 
   deleteTask(id: number) {
-    this.taskService.deleteTask(id).subscribe(data => {
-      console.log(data);
-    });
+    this.store.dispatch(new taskActions.RemoveTask(id));
   }
 
   displayTasks(p: string) {
-    // this.display = p;
     this.store.dispatch(new taskActions.ChangeDisplay(p));
   }
 
   get lengthTasksTodo() {
-    let i: number;
-    this.tasks$.pipe(
-      map(tasks =>
-        tasks.forEach(task => (task.status === false ? i++ : (i = i + 0)))
-      )
+    let i = 0;
+    this.tasks$.subscribe(tasks =>
+      tasks.forEach(task => (task.status === false ? i++ : (i = i + 0)))
     );
     return i;
   }
+
+  get lengthTasks() {
+    let i = 0;
+    this.tasks$.subscribe(tasks => {
+      tasks.forEach(t => i++);
+    });
+    return i;
+  }
+
+  // get lengthTasksTodo() {
+  //   let i: number;
+  //   this.tasks.forEach(task => (task.status === false ? i++ : (i = i + 0)));
+  //   return i;
+  // }
 
   selectionChange(option: MatListOption) {
     console.log(option);

@@ -11,16 +11,12 @@ export interface State {
 export interface TaskState {
   display: string;
   tasks: Task[];
-  newTask: Task;
-  updatedTask: Task;
   error: string;
 }
 
 const initialState: TaskState = {
   display: 'all',
   tasks: [],
-  newTask: null,
-  updatedTask: null,
   error: ''
 };
 
@@ -47,16 +43,33 @@ export function reducer(state = initialState, action: TaskActions): TaskState {
   switch (action.type) {
     case TaskActionTypes.ChangeDisplay:
       return { ...state, display: action.payload };
-    case TaskActionTypes.AddTask:
-      return { ...state, newTask: action.payload };
-    case TaskActionTypes.ChangeTaskName:
-      return { ...state, updatedTask: action.payload };
-    case TaskActionTypes.ChangeTaskStatus:
-      return { ...state, updatedTask: action.payload };
     case TaskActionTypes.LoadSuccess:
       return { ...state, tasks: action.payload, error: '' };
     case TaskActionTypes.LoadFail:
       return { ...state, tasks: [], error: action.payload };
+    case TaskActionTypes.AddTaskSuccess:
+      return {
+        ...state,
+        tasks: [...state.tasks, action.payload],
+        error: ''
+      };
+    case TaskActionTypes.AddTaskFail:
+      return { ...state, error: action.payload };
+    case TaskActionTypes.UpdateTaskSuccess:
+      const updatedTask = state.tasks.map(t =>
+        action.payload.id === t.id ? action.payload : t
+      );
+      return { ...state, tasks: updatedTask, error: '' };
+    case TaskActionTypes.UpdateTaskFail:
+      return { ...state, error: action.payload };
+    case TaskActionTypes.RemoveTaskSuccess:
+      return {
+        ...state,
+        tasks: state.tasks.filter(t => t.id !== action.payload),
+        error: ''
+      };
+    case TaskActionTypes.RemoveTaskFail:
+      return { ...state, error: action.payload };
     default:
       return state;
   }

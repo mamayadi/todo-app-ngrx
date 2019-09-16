@@ -10,14 +10,13 @@ import {tap, catchError, map} from 'rxjs/operators';
 })
 export class TaskService {
   private tasksUrl = 'api/tasks';
-  private tasks: Task[];
+
   constructor(private http: HttpClient) {}
 
   getTasks(): Observable<Task[]> {
     return this.http.get<Task[]>(this.tasksUrl)
       .pipe(
         tap(data => console.log(JSON.stringify(data))),
-        // tap(data => this.tasks = data),
         catchError(this.handleError)
       );
   }
@@ -27,7 +26,6 @@ export class TaskService {
     return this.http.post<Task>(this.tasksUrl, task, { headers })
       .pipe(
         tap(data => console.log('createTask: ' + JSON.stringify(data))),
-        tap(data => this.tasks.push(data)),
         catchError(this.handleError)
       );
   }
@@ -38,15 +36,6 @@ export class TaskService {
     return this.http.put<Task>(url, task, { headers })
       .pipe(
         tap(() => console.log('updateTask: ' + task.id)),
-        // Update the item in the list
-        // This is required because the selected Task that was edited
-        // was a copy of the item from the array.
-        tap(() => {
-          const foundIndex = this.tasks.findIndex(item => item.id === task.id);
-          if (foundIndex > -1) {
-            this.tasks[foundIndex] = task;
-          }
-        }),
         // Return the Task on an update
         map(() => task),
         catchError(this.handleError)
@@ -59,12 +48,6 @@ export class TaskService {
     return this.http.delete<Task>(url, { headers })
       .pipe(
         tap(data => console.log('deleteTask: ' + id)),
-        tap(data => {
-          const foundIndex = this.tasks.findIndex(item => item.id === id);
-          if (foundIndex > -1) {
-            this.tasks.splice(foundIndex, 1);
-          }
-        }),
         catchError(this.handleError)
       );
   }
